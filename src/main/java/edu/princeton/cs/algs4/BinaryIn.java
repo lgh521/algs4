@@ -17,8 +17,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+
 import java.util.NoSuchElementException;
 
 /**
@@ -80,7 +84,7 @@ public final class BinaryIn {
             fillBuffer();
         }
         catch (IOException ioe) {
-            System.err.println("Could not open " + socket);
+            System.err.println("could not read socket: " + socket);
         }
     }
 
@@ -97,7 +101,7 @@ public final class BinaryIn {
             fillBuffer();
         }
         catch (IOException ioe) {
-            System.err.println("Could not open " + url);
+            System.err.println("could not open URL: '" + url + "'");
         }
     }
 
@@ -123,7 +127,9 @@ public final class BinaryIn {
 
             // or URL from web
             if (url == null) {
-                url = new URL(name);
+                URI uri = new URI(name);
+                if (uri.isAbsolute()) url = uri.toURL();
+                else throw new IllegalArgumentException("could not read: '" + name+ "'");
             }
 
             URLConnection site = url.openConnection();
@@ -131,8 +137,8 @@ public final class BinaryIn {
             in = new BufferedInputStream(is);
             fillBuffer();
         }
-        catch (IOException ioe) {
-            System.err.println("Could not open " + name);
+        catch (IOException | URISyntaxException e) {
+            System.err.println("could not open: '" + name + "'");
         }
     }
 
@@ -381,7 +387,7 @@ public final class BinaryIn {
 }
 
 /******************************************************************************
- *  Copyright 2002-2022, Robert Sedgewick and Kevin Wayne.
+ *  Copyright 2002-2025, Robert Sedgewick and Kevin Wayne.
  *
  *  This file is part of algs4.jar, which accompanies the textbook
  *

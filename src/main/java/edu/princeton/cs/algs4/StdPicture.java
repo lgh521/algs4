@@ -12,8 +12,7 @@ package edu.princeton.cs.algs4;
  *  The {@code StdPicture} class provides static methods for manipulating
  *  the individual pixels of an image using the RGB color model.
  *  You can either initialize a blank image (of a given dimension) or read an
- *  image in a supported file format
- *  (typically JPEG, PNG, GIF TIFF, and BMP).
+ *  image in a supported file format (typically JPEG, PNG, GIF, TIFF, and BMP).
  *  This class also includes methods for displaying the image in a window
  *  and saving it to a file.
  *
@@ -72,6 +71,20 @@ package edu.princeton.cs.algs4;
  *  </blockquote>
  *
  *  <p>
+ *  <b>Initializing the picture.</b>
+ *  You can use the following methods to initialize the picture:
+ *  <ul>
+ *  <li> {@link #read(String filename)}
+ *  <li> {@link #init(int width, int height)}
+ *  </ul>
+ *  <p>
+ *  The first method reads an image in a supported file format
+ *  (typically JPEG, PNG, GIF, TIFF, and BMP)
+ *  and initializes the picture to that image.
+ *  The second method initializes a <em>width</em>-by-<em>height</em>
+ *  picture, with each pixel black.
+ *
+ *  <p>
  *  <b>Getting and setting the colors of the individual pixels.</b>
  *  You can use the following methods to retrieve the RGB components
  *  of a specified pixel:
@@ -86,7 +99,7 @@ package edu.princeton.cs.algs4;
  *  (<em>col</em>, <em>row</em>). Each component is an integer between 0 and 255,
  *  with 0 corresponding to the absence of that component and 255 corresponding
  *  to full intensity of that component.
- *  The last methods set the red, green, and blue components of pixel
+ *  The last method sets the red, green, and blue components of pixel
  *  (<em>col</em>, <em>row</em>) to the specified values.
  *
  *  <p><b>Iterating over the pixels.</b>
@@ -116,27 +129,35 @@ package edu.princeton.cs.algs4;
  *  ARGB color model. The following methods are useful for this:
  *  <ul>
  *  <li> {@link #getAlpha(int col, int row)}
- *  <li> {@link #setARGB(int col, int row, int r, int g, int b, int a)}
+ *  <li> {@link #setARGB(int col, int row, int a, int r, int g, int b)}
  *  </ul>
  *  <p>
  *  The first method gets the alpha component of pixel (<em>col</em>, <em>row</em>).
- *  The second methods sets the red, green, blue, and alpha components of
+ *  The second methods sets the alpha, red, green, and bluecomponents of
  *  pixel (<em>col</em>, <em>row</em>).
  *  The alpha value defines the transparency of a color, with 0 corresponding to
  *  completely transparent and 255 to completely opaque. If transparency is not
- *  explicitly used, all alpha values are 255.
+ *  explicitly used, the alpha value is 255.
  *
- *  <p><b>File formats.</b>
- *  The {@code Picture} class supports reading and writing images in
- *  a supported format (typically JPEG, PNG, GIF TIFF, and BMP).
- *  Note that some file format (such as JPEG and BMP) do not support transparency.
- *  You can save the picture to a file using this method:
+ *  <p><b>Saving files.</b>
+ *  The {@code StdPicture} class supports writing images to a supported
+ *  file format (typically JPEG, PNG, GIF, TIFF, and BMP).
+ *  You can save the picture to a file two method:
  *  <ul>
  *  <li> {@link #save(String filename)}
  *  </ul>
  *
  *  <p>Alternatively, you can save the picture interactively
  *  by using the menu option <em>File → Save</em> from the picture window.
+ *
+ *  <p><b>File formats.</b>
+ *  The {@code StdPicture} class supports reading and writing images to any of the
+ *  file formats supported by {@link javax.imageio} (typically JPEG, PNG,
+ *  GIF, TIFF, and BMP).
+ *  The file extensions corresponding to JPEG, PNG, GIF, TIFF, and BMP,
+ *  are {@code .jpg}, {@code .png}, {@code .gif}, {@code .tif},
+ *  and {@code .bmp}, respectively.
+ *  The file formats JPEG and BMP do not support transparency.
  *
  *  <p><b>Memory usage.</b>
  *  A <em>W</em>-by-<em>H</em> picture uses ~ 4 <em>W H</em> bytes of memory,
@@ -183,24 +204,12 @@ public final class StdPicture {
     }
 
    /**
-     * Creates a {@code width}-by-{@code height} picture, with {@code width} columns
-     * and {@code height} rows, where each pixel is black.
+     * Initializes the picture by reading a JPEG, PNG, GIF, BMP, or TIFF image
+     * from a file or URL.
+     * The filetype extension must be {@code .jpg}, {@code .png}, {@code .gif},
+     * {@code .bmp}, or {@code .tif}.
      *
-     * @param width the width of the picture
-     * @param height the height of the picture
-     * @throws IllegalArgumentException if {@code width} is negative or zero
-     * @throws IllegalArgumentException if {@code height} is negative or zero
-     * @deprecated Replaced by {@link #init(int, int)}.
-     */
-    @Deprecated
-    public static void create(int width, int height) {
-        init(width, height);
-    }
-
-   /**
-     * Initializes the picture by reading an image from a file or URL.
-     *
-     * @param  filename the name of the file (.png, .gif, or .jpg) or URL.
+     * @param  filename the name of the file or URL
      * @throws IllegalArgumentException if cannot read image
      * @throws IllegalArgumentException if {@code name} is {@code null}
      */
@@ -211,7 +220,7 @@ public final class StdPicture {
         if (newPicture.width() == picture.width() && newPicture.height() == newPicture.height()) {
             for (int col = 0; col < picture.width(); col++) {
                 for (int row = 0; row < picture.height(); row++) {
-                    picture.setRGB(col, row, newPicture.getRGB(col, row));
+                    picture.setARGB(col, row, newPicture.getARGB(col, row));
                 }
             }
         }
@@ -230,16 +239,11 @@ public final class StdPicture {
     }
 
    /**
-     * Initializes the picture by reading an image from a file or URL.
-     *
-     * @param  filename the name of the file (.png, .gif, or .jpg) or URL.
-     * @throws IllegalArgumentException if cannot read image
-     * @throws IllegalArgumentException if {@code name} is {@code null}
-     * @deprecated Replaced by {@link #read(String)}.
+     * Is the window containing the picture visible?
+     * @return {@code true} if the picture is visible, and {@code false} otherwise
      */
-    @Deprecated
-    public static void create(String filename) {
-        read(filename);
+    public static boolean isVisible() {
+        return picture.isVisible();
     }
 
    /**
@@ -250,14 +254,14 @@ public final class StdPicture {
     }
 
    /**
-     * Hides the window on the screen containing the picture.
+     * Hides the window containing the picture.
      */
     public static void hide() {
         picture.hide();
     }
 
     /**
-     * Pauses for t milliseconds. This method is intended to support computer animations.
+     * Pauses for t milliseconds. This method is intended to support computer animation.
      * @param t number of milliseconds
      * @throws IllegalArgumentException if {@code t} is negative
      */
@@ -295,10 +299,10 @@ public final class StdPicture {
      * @param col the column index
      * @param row the row index
      * @return the alpha component of the color of pixel ({@code col}, {@code row})
-     * @throws IllegalArgumentException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
      */
     public static int getAlpha(int col, int row) {
-        int rgb = picture.getRGB(col, row);
+        int rgb = picture.getARGB(col, row);
         return (rgb >> 24) & 0xFF;
     }
 
@@ -308,10 +312,10 @@ public final class StdPicture {
      * @param col the column index
      * @param row the row index
      * @return the red component of the color of pixel ({@code col}, {@code row})
-     * @throws IllegalArgumentException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
      */
     public static int getRed(int col, int row) {
-        int rgb = picture.getRGB(col, row);
+        int rgb = picture.getARGB(col, row);
         return (rgb >> 16) & 0xFF;
     }
 
@@ -321,10 +325,10 @@ public final class StdPicture {
      * @param col the column index
      * @param row the row index
      * @return the green component of the color of pixel ({@code col}, {@code row})
-     * @throws IllegalArgumentException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
      */
     public static int getGreen(int col, int row) {
-        int rgb = picture.getRGB(col, row);
+        int rgb = picture.getARGB(col, row);
         return (rgb >> 8) & 0xFF;
     }
 
@@ -334,33 +338,51 @@ public final class StdPicture {
      * @param col the column index
      * @param row the row index
      * @return the blue component of the color of pixel ({@code col}, {@code row})
-     * @throws IllegalArgumentException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
      */
     public static int getBlue(int col, int row) {
-        int rgb = picture.getRGB(col, row);
+        int rgb = picture.getARGB(col, row);
         return (rgb >> 0) & 0xFF;
     }
 
    /**
-     * Sets the color of pixel ({@code col}, {@code row}) to given color.
+     * Returns the ARGB color of pixel ({@code col}, {@code row}).
+     *
+     * @param col the column index
+     * @param row the row index
+     * @return the ARGB color of pixel ({@code col}, {@code row} as a 32-bit integer
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     */
+    public static int getARGB(int col, int row) {
+        int argb = picture.getARGB(col, row);
+        return argb;
+    }
+
+   /**
+     * Sets the color of pixel ({@code col}, {@code row}) to the given RGB color using
+     * red, green, and blue components. The alpha component is set to 255 (no transparency).
      *
      * @param col the column index
      * @param row the row index
      * @param r the red component of the color
      * @param g the green component of the color
      * @param b the blue component of the color
-     * @throws IllegalArgumentException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
      * @throws IllegalArgumentException unless {@code 0 <= r < 256}, {@code 0 <= g < 256},
      *                                  and {@code 0 <= b < 256}.
      */
     public static void setRGB(int col, int row, int r, int g, int b) {
+        validateComponent(r, "red");
+        validateComponent(g, "green");
+        validateComponent(b, "blue");
         int a = 255;
-        int rgb = (a << 24) | (r << 16) | (g << 8) | (b << 0);
-        picture.setRGB(col, row, rgb);
+        int argb = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+        picture.setARGB(col, row, argb);
     }
 
    /**
-     * Sets the color of pixel ({@code col}, {@code row}) to given color.
+     * Sets the color of pixel ({@code col}, {@code row}) to the given ARGB color using
+     * alpha, red, green, and blue components.
      *
      * @param col the column index
      * @param row the row index
@@ -368,14 +390,50 @@ public final class StdPicture {
      * @param r the red component of the color
      * @param g the green component of the color
      * @param b the blue component of the color
-     * @throws IllegalArgumentException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
      * @throws IllegalArgumentException unless {@code 0 <= a < 256}, {@code 0 <= r < 256},
      *                                         {@code 0 <= g < 256}, and {@code 0 <= b < 256}.
      */
     public static void setARGB(int col, int row, int a, int r, int g, int b) {
-        int rgb = (a << 24) | (r << 16) | (g << 8) | (b << 0);
-        picture.setRGB(col, row, rgb);
+        validateComponent(a, "alpha");
+        validateComponent(r, "red");
+        validateComponent(g, "green");
+        validateComponent(b, "blue");
+
+        // internally represented using ARGB, not RGBA
+        int argb = (a << 24) | (r << 16) | (g << 8) | (b << 0);
+        picture.setARGB(col, row, argb);
     }
+
+   /**
+     * Sets the color of pixel ({@code col}, {@code row}) to the given RGB color.
+     *
+     * @param col the column index
+     * @param row the row index
+     * @param rgb the RGB color, represented as a 24-bit integer
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     * @throws IllegalArgumentException unless {@code 0 <= rgb < 2^24}.
+     */
+/*
+    public static void setRGB(int col, int row, int rgb) {
+        int a = 255;
+        int argb = (a << 24) | (rgb);
+        picture.setARGB(col, row, argb);
+    }
+*/
+
+   /**
+     * Sets the color of pixel ({@code col}, {@code row}) to the given ARGB color.
+     *
+     * @param col the column index
+     * @param row the row index
+     * @param argb the ARGB color, represented as a 32-bit integer
+     * @throws IndexOutOfBoundsException unless both {@code 0 <= col < width} and {@code 0 <= row < height}
+     */
+    public static void setARGB(int col, int row, int argb) {
+        picture.setARGB(col, row, argb);
+    }
+
 
     /**
      * Sets the title of this picture.
@@ -387,8 +445,13 @@ public final class StdPicture {
     }
 
    /**
-     * Saves the picture to a file in a supported format
-     * (typically JPEG, PNG, GIF TIFF, and BMP).
+     * Saves the picture to a file in a supported file format
+     * (typically JPEG, PNG, GIF, TIFF, and BMP).
+     * The filetype extension must be {@code .jpg}, {@code .png}, {@code .gif},
+     * {@code .bmp}, or {@code .tif}.
+     * If the file format does not support transparency (such as JPEG
+     * or BMP), it will be converted to be opaque (with purely
+     * transparent pixels converted to black).
      *
      * @param filename the name of the file
      * @throws IllegalArgumentException if {@code filename} is {@code null}
@@ -396,6 +459,12 @@ public final class StdPicture {
      */
     public static void save(String filename) {
         picture.save(filename);
+    }
+
+    private static void validateComponent(int val, String name) {
+        if (val < 0 || val >= 256) {
+            throw new IllegalArgumentException(name + " must be between 0 and 255");
+        }
     }
 
    /**
@@ -414,7 +483,7 @@ public final class StdPicture {
 }
 
 /******************************************************************************
- *  Copyright 2002-2022, Robert Sedgewick and Kevin Wayne.
+ *  Copyright 2002-2025, Robert Sedgewick and Kevin Wayne.
  *
  *  This file is part of algs4.jar, which accompanies the textbook
  *
